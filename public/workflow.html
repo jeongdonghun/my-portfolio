@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>뉴스 RSS 리더 - 에이전틱 워크플로우</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #0f172a;
+      font-family: 'Segoe UI', sans-serif;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #7dd3fc;
+      margin-bottom: 32px;
+      letter-spacing: 1px;
+    }
+    .mermaid {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .legend {
+      max-width: 960px;
+      margin: 24px auto 0;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: #94a3b8;
+    }
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>뉴스 RSS 리더 — 에이전틱 워크플로우</h1>
+
+  <div class="mermaid">
+flowchart TD
+    A(["⏰ 스케줄러 에이전트\n15분 주기 트리거"]):::scheduler
+
+    A --> B["📡 피드 수집 에이전트\n병렬 RSS fetch\nHTTP 캐싱"]:::collector
+
+    B --> C1["연합뉴스 RSS"]:::source
+    B --> C2["KBS RSS"]:::source
+    B --> C3["MBC RSS"]:::source
+
+    C1 & C2 & C3 --> D[("🗄️ 원본 DB\n수집된 기사")]:::db
+
+    D --> E["🔍 중복 제거 에이전트\n유사 제목 탐지\nURL 해시 비교"]:::agent
+
+    E --> F["✍️ 요약 에이전트\nClaude API\n3줄 요약 생성"]:::claude
+    E --> G["🏷️ 분류/태깅 에이전트\nClaude API\n정치·경제·사회 분류"]:::claude
+    E --> H["⭐ 중요도 평가 에이전트\nClaude API\n1-10점 스코어링"]:::claude
+
+    F & G & H --> I[("📦 가공 뉴스 DB\ntitle·summary·tags·score")]:::db
+
+    I --> J["👤 개인화 에이전트\n읽기 이력 분석\n맞춤 우선순위 정렬"]:::agent
+
+    J --> K["🔔 알림 에이전트\n중요도 8점↑ 감지\nPush / 이메일"]:::notify
+    J --> L["🖥️ 프론트엔드\n카드 UI 렌더링"]:::frontend
+
+    K --> L
+
+    classDef scheduler fill:#7c3aed,stroke:#a78bfa,color:#fff,rx:20
+    classDef collector fill:#0369a1,stroke:#38bdf8,color:#fff
+    classDef source fill:#1e3a5f,stroke:#38bdf8,color:#93c5fd,stroke-dasharray:4
+    classDef db fill:#064e3b,stroke:#34d399,color:#6ee7b7
+    classDef agent fill:#92400e,stroke:#fbbf24,color:#fde68a
+    classDef claude fill:#7f1d1d,stroke:#f87171,color:#fecaca
+    classDef notify fill:#4c1d95,stroke:#c084fc,color:#e9d5ff
+    classDef frontend fill:#1e3a5f,stroke:#60a5fa,color:#bfdbfe
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div> 스케줄러</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0369a1"></div> 수집 에이전트</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#064e3b"></div> 데이터베이스</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#92400e"></div> 처리 에이전트</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7f1d1d"></div> Claude API</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4c1d95"></div> 알림</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1e3a5f"></div> 프론트엔드</div>
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        background: '#1e293b',
+        primaryColor: '#1e40af',
+        primaryTextColor: '#e2e8f0',
+        lineColor: '#475569',
+        fontSize: '14px'
+      },
+      flowchart: { curve: 'basis', padding: 20 }
+    });
+  </script>
+</body>
+</html>
