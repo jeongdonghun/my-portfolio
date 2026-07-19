@@ -1,2 +1,6 @@
 node_modules/
 **/node_modules/
+
+# my-portfolio 저장소와 무관한 다른 로컬 프로젝트 폴더
+public/
+뉴스 RSS/
